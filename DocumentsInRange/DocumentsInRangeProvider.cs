@@ -12,6 +12,11 @@ namespace DocumentsInRange
         {
         }
 
+        /// <summary>
+        /// Helper function to build lowest possible date string from given partial input
+        /// </summary>
+        /// <param name="prefix">partial date string</param>
+        /// <returns>lowest possible date string</returns>
         private static string BuildSuffixL(string prefix)
         {
             Dictionary<int, string> lengthToSuffix = new Dictionary<int, string>()
@@ -47,9 +52,11 @@ namespace DocumentsInRange
                     suffix = lengthToSuffix[prefix.Length];
                     break;
                 case 7:
+                    // given tenths of days
                     suffix = prefix[prefix.Length - 1] != '0' ? "0000000" : "1000000";
                     break;
                 case 5:
+                    //given tenths of a month
                     suffix = prefix[prefix.Length - 1] != '0' ? "001000000" : "101000000";
                     break;
                 default:
@@ -59,6 +66,11 @@ namespace DocumentsInRange
             return suffix;
         }
 
+        /// <summary>
+        /// Helper function to build highest possible date string from given partial input
+        /// </summary>
+        /// <param name="prefix">partial date string</param>
+        /// <returns>highest possible date string</returns>
         private static string BuildSuffixR(string prefix)
         {
             Dictionary<int, string> lengthToSuffix = new Dictionary<int, string>()
@@ -93,6 +105,7 @@ namespace DocumentsInRange
                     break;
                 case 7:
                     char c6 = prefix[prefix.Length - 1];
+                    // Month can have maximum of 28, 29, 30, 31 days
                     switch (c6)
                     {
                         case '0':
@@ -237,6 +250,12 @@ namespace DocumentsInRange
             return documentList;
         }
 
+        /// <summary>
+        /// Returns required calls to be made to GetDocuments API to get documents between startDateTime and endDateTime
+        /// </summary>
+        /// <param name="startDateTime">starting date</param>
+        /// <param name="endDateTime">ending date</param>
+        /// <returns>array of calls to be made to GetDocuments API</returns>
         public string[] PrepareApiCalls(DateTime startDateTime, DateTime endDateTime)
         {
             List<string> prefixesToCall = new List<string>();
@@ -244,6 +263,7 @@ namespace DocumentsInRange
             DateTime currentDt = new DateTime((startDateTime.Year / 1000 + 1) * 1000, 1, 1);
             if (currentDt < endDateTime)
             {
+                // If startDateTime and endDateTime are in different milleniums
                 prefixesToCall.AddRange(CollectPrefixesProto(startDateTime, currentDt.AddDays(-1)));
                 while (currentDt.AddYears(1000).Year / 1000 <= endDateTime.Year / 1000)
                 {
@@ -261,6 +281,12 @@ namespace DocumentsInRange
             return prefixesToCall.ToArray();
         }
 
+        /// <summary>
+        /// Returns lowest dateTime from a given partial datetime string
+        /// </summary>
+        /// <param name="startDateTime">datetime string</param>
+        /// <param name="marginLeft">lowest date</param>
+        /// <returns>true if passed in string can be used to create a valid date</returns>
         public bool GetLeftMargin(string startDateTime, out DateTime marginLeft)
         {
             //Check that arguments are not null or empty and less than or equal to 14 characters
@@ -281,6 +307,12 @@ namespace DocumentsInRange
             return result;
         }
 
+        /// <summary>
+        /// Returns highest dateTime from a given partial datetime string
+        /// </summary>
+        /// <param name="startDateTime">datetime string</param>
+        /// <param name="marginRight">highest date</param>
+        /// <returns>true if passed in string can be used to create a valid date</returns>
         public bool GetRightMargin(string startDateTime, out DateTime marginRight)
         {
             //Check that arguments are not null or empty and less than or equal to 14 characters
@@ -289,6 +321,7 @@ namespace DocumentsInRange
                 throw new ArgumentException("Invalid startDateTime or endDateTime");
             }
 
+            // Normalize the input dates for partial inputs
             if (startDateTime.Length < 14)
             {
                 string suffix = BuildSuffixR(startDateTime);
@@ -300,6 +333,12 @@ namespace DocumentsInRange
             return result;
         }
 
+        /// <summary>
+        /// Builds api calls
+        /// </summary>
+        /// <param name="beginDate">starting date</param>
+        /// <param name="endDate">ending date</param>
+        /// <returns>array of api calls to be made</returns>
         public string[] CollectPrefixesProto(DateTime beginDate, DateTime endDate)
         {
             List<string> prefixes = new List<string>();
@@ -315,6 +354,7 @@ namespace DocumentsInRange
 
                     if (GetLeftMargin(prefix, out DateTime marginLeft) && GetRightMargin(prefix, out DateTime marginRight))
                     {
+                        // Check if calling GetDocuments api with prefix will cover dates in [marginLeft, marginRight] interval
                         if (beginDate <= marginLeft && marginRight <= endDate)
                         {
                             // Internal range is found
@@ -331,7 +371,6 @@ namespace DocumentsInRange
                                 prefixes.AddRange(CollectPrefixesProto(marginRight.AddDays(1), endDate));
                             }
 
-                            ///break;
                             return prefixes.ToArray();
                         }
                     }
@@ -340,6 +379,7 @@ namespace DocumentsInRange
                 }
             }
 
+            // If no internal range is found, iterate from beginning through each date exactly
             while (beginDate <= endDate)
             {
                 prefixes.Add(beginDate.ToString("yyyyMMdd"));
@@ -383,8 +423,7 @@ namespace DocumentsInRange
                 throw new ArgumentException("Invalid start date. Please specify a valid start date.");
             }
 
-            format = yyyyMMddHHmmss.Substring(0, endDateTime.Length);
-            if (!DateTime.TryParseExact(endDateTime, format, null, System.Globalization.DateTimeStyles.None, out endDate))
+            if (!DateTime.TryParseExact(endDateTime, format, null, DateTimeStyles.None, out endDate))
             {
                 throw new ArgumentException("Invalid end date. Please specify a valid end date.");
             }

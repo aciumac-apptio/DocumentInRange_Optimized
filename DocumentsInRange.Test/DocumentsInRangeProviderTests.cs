@@ -78,13 +78,6 @@ namespace DocumentsInRange.Test
         [TestMethod]
         public void DocumentsInRangeProvider_GetDocumentsInRange_Gets5DocumentsInclusive()
         {
-            /* Expected list:
-            * 1969-02-25 00:00:00
-            * 1969-02-26 00:00:00
-            * 1969-02-27 00:00:00
-            * 1969-02-28 00:00:00
-            * 1969-03-01 00:00:00
-            */
             // act
             var list = documentInRangeProvider.GetDocumentsInRange(repo, "19690225000000", "19690301030405", out long calls);
 
@@ -92,7 +85,10 @@ namespace DocumentsInRange.Test
             Assert.AreEqual(5, calls);
             Assert.AreEqual(5, list.Count);
             Assert.AreEqual("19690225000000", list[0].documentDate);
-            Assert.AreEqual("19690301000000", list[list.Count - 1].documentDate);
+            Assert.AreEqual("19690226000000", list[1].documentDate);
+            Assert.AreEqual("19690227000000", list[2].documentDate);
+            Assert.AreEqual("19690228000000", list[3].documentDate);
+            Assert.AreEqual("19690301000000", list[4].documentDate);
         }
 
         [TestMethod]
@@ -133,7 +129,6 @@ namespace DocumentsInRange.Test
             var list = documentInRangeProvider.GetDocumentsInRange(repo, "20190112000000", "20190129000000", out long calls);
 
             // assert
-            // Todo fix the code to achieve 9 api calls
             Assert.AreEqual(9, calls);
             Assert.AreEqual(18, list.Count);
             Assert.AreEqual("20190112000000", list[0].documentDate);
@@ -151,7 +146,6 @@ namespace DocumentsInRange.Test
             var list = documentInRangeProvider.GetDocumentsInRange(repo, "20190112000000", "20190130000000", out long calls);
 
             // assert
-            // Todo fix the code to achieve 10 api calls
             Assert.AreEqual(10, calls);
             Assert.AreEqual(19, list.Count);
             Assert.AreEqual("20190112000000", list[0].documentDate);
@@ -169,7 +163,6 @@ namespace DocumentsInRange.Test
             var list = documentInRangeProvider.GetDocumentsInRange(repo, "20190101000000", "20190131000000", out long calls);
 
             // assert
-            // Todo fix the code to achieve 1 api calls
             Assert.AreEqual(1, calls);
             Assert.AreEqual(31, list.Count);
             Assert.AreEqual("20190101000000", list[0].documentDate);
@@ -279,57 +272,6 @@ namespace DocumentsInRange.Test
 
         }
 
-        //[TestMethod]
-        //public void DocumentsInRangeProvider_MinAndMaxDate()
-        //{
-        //    documentInRangeProvider.MinAndMaxDate("20191", out DateTime marginLeft, out DateTime marginRight);
-
-        //    Assert.AreEqual(new DateTime(2019, 10, 01), marginLeft);
-        //    Assert.AreEqual(new DateTime(2019, 12, 31), marginRight);
-
-        //    documentInRangeProvider.MinAndMaxDate("201910", out marginLeft, out marginRight);
-
-        //    Assert.AreEqual(new DateTime(2019, 10, 01), marginLeft);
-        //    Assert.AreEqual(new DateTime(2019, 10, 31), marginRight);
-
-        //    documentInRangeProvider.MinAndMaxDate("201911", out marginLeft, out marginRight);
-
-        //    Assert.AreEqual(new DateTime(2019, 11, 01), marginLeft);
-        //    Assert.AreEqual(new DateTime(2019, 11, 30), marginRight);
-
-        //    documentInRangeProvider.MinAndMaxDate("2019111", out marginLeft, out marginRight);
-
-        //    Assert.AreEqual(new DateTime(2019, 11, 10), marginLeft);
-        //    Assert.AreEqual(new DateTime(2019, 11, 19), marginRight);
-
-        //    documentInRangeProvider.MinAndMaxDate("2019112", out marginLeft, out marginRight);
-
-        //    Assert.AreEqual(new DateTime(2019, 11, 20), marginLeft);
-        //    Assert.AreEqual(new DateTime(2019, 11, 29), marginRight);
-
-        //    documentInRangeProvider.MinAndMaxDate("2019", out marginLeft, out marginRight);
-
-        //    Assert.AreEqual(new DateTime(2019, 01, 01), marginLeft);
-        //    Assert.AreEqual(new DateTime(2019, 12, 31), marginRight);
-
-        //    documentInRangeProvider.MinAndMaxDate("201", out marginLeft, out marginRight);
-
-        //    Assert.AreEqual(new DateTime(2010, 01, 01), marginLeft);
-        //    Assert.AreEqual(new DateTime(2019, 12, 31), marginRight);
-
-        //    documentInRangeProvider.MinAndMaxDate("20", out marginLeft, out marginRight);
-
-        //    Assert.AreEqual(new DateTime(2000, 01, 01), marginLeft);
-        //    Assert.AreEqual(new DateTime(2099, 12, 31), marginRight);
-
-        //    documentInRangeProvider.MinAndMaxDate("2", out marginLeft, out marginRight);
-
-        //    Assert.AreEqual(new DateTime(2000, 01, 01), marginLeft);
-        //    Assert.AreEqual(new DateTime(2999, 12, 31), marginRight);
-
-        //}
-
-
         [TestMethod]
         public void DocumentsInRangeProvider_Prefixes_1101__1130()
         {
@@ -418,7 +360,6 @@ namespace DocumentsInRange.Test
             Assert.AreEqual("20191117", prefixes[5]);
             Assert.AreEqual("20191118", prefixes[6]);
             Assert.AreEqual("20191119", prefixes[7]);
-
             Assert.AreEqual("2019112", prefixes[8]);
             Assert.AreEqual("2019113", prefixes[9]);
         }
@@ -517,7 +458,7 @@ namespace DocumentsInRange.Test
         }
 
         [TestMethod]
-        public void DocumentsInRangeProvider_Prefixes_2000_01_01__2019_12_31_FiveYears()
+        public void DocumentsInRangeProvider_Prefixes_2000_01_01__2019_12_31()
         {
             /* 
              * Dates from 2019-02-02 to 2019-04-30.
@@ -534,22 +475,14 @@ namespace DocumentsInRange.Test
 
             // assert
             Assert.AreEqual(2, calls);
-            //Assert.AreEqual("2014", prefixes[0]);
-            //Assert.AreEqual("2015", prefixes[1]);
-            //Assert.AreEqual("2016", prefixes[2]);
-            //Assert.AreEqual("2017", prefixes[3]);
-            //Assert.AreEqual("2018", prefixes[4]);
-            //Assert.AreEqual("2019", prefixes[5]);
+            Assert.AreEqual("200", prefixes[0]);
+            Assert.AreEqual("201", prefixes[1]);
         }
 
 
         [TestMethod]
-        public void DocumentsInRangeProvider_Prefixes_1970_01_01__1995_12_31_FiveYears()
+        public void DocumentsInRangeProvider_Prefixes_1970_01_01__1995_12_25()
         {
-            /* 
-             * Dates from 2019-02-02 to 2019-04-30.
-             * Expected result is list having 88 documents in 12 api call.
-            */
             // act
             DateTime begDate = new DateTime(1970, 1, 1);
             DateTime endDate = new DateTime(1995, 12, 25);
@@ -561,27 +494,24 @@ namespace DocumentsInRange.Test
 
             // assert
             Assert.AreEqual(18, calls);
-            //Assert.AreEqual("2014", prefixes[0]);
-            //Assert.AreEqual("2015", prefixes[1]);
-            //Assert.AreEqual("2016", prefixes[2]);
-            //Assert.AreEqual("2017", prefixes[3]);
-            //Assert.AreEqual("2018", prefixes[4]);
-            //Assert.AreEqual("2019", prefixes[5]);
-        }
-
-        [TestMethod]
-        public void DocumentsInRangeProvider_PrepareApiCalls_SameMillenium()
-        {
-            DateTime begDate = new DateTime(1970, 1, 1);
-            DateTime endDate = new DateTime(1995, 12, 25);
-
-
-            string[] prefixes = documentInRangeProvider.PrepareApiCalls(begDate, endDate);
-            int calls = prefixes.Length;
-            Array.Sort(prefixes);
-
-            // assert
-            Assert.AreEqual(18, calls);
+            Assert.AreEqual("197", prefixes[0]);
+            Assert.AreEqual("198", prefixes[1]);
+            Assert.AreEqual("1990", prefixes[2]);
+            Assert.AreEqual("1991", prefixes[3]);
+            Assert.AreEqual("1992", prefixes[4]);
+            Assert.AreEqual("1993", prefixes[5]);
+            Assert.AreEqual("1994", prefixes[6]);
+            Assert.AreEqual("19950", prefixes[7]);
+            Assert.AreEqual("199510", prefixes[8]);
+            Assert.AreEqual("199511", prefixes[9]);
+            Assert.AreEqual("1995120", prefixes[10]);
+            Assert.AreEqual("1995121", prefixes[11]);
+            Assert.AreEqual("19951220", prefixes[12]);
+            Assert.AreEqual("19951221", prefixes[13]);
+            Assert.AreEqual("19951222", prefixes[14]);
+            Assert.AreEqual("19951223", prefixes[15]);
+            Assert.AreEqual("19951224", prefixes[16]);
+            Assert.AreEqual("19951225", prefixes[17]);
         }
 
         [TestMethod]
@@ -590,13 +520,31 @@ namespace DocumentsInRange.Test
             DateTime begDate = new DateTime(1970, 1, 1);
             DateTime endDate = new DateTime(2005, 12, 25);
 
-
             string[] prefixes = documentInRangeProvider.PrepareApiCalls(begDate, endDate);
             int calls = prefixes.Length;
             Array.Sort(prefixes);
 
             // assert
             Assert.AreEqual(19, calls);
+            Assert.AreEqual("197", prefixes[0]);
+            Assert.AreEqual("198", prefixes[1]);
+            Assert.AreEqual("199", prefixes[2]);
+            Assert.AreEqual("2000", prefixes[3]);
+            Assert.AreEqual("2001", prefixes[4]);
+            Assert.AreEqual("2002", prefixes[5]);
+            Assert.AreEqual("2003", prefixes[6]);
+            Assert.AreEqual("2004", prefixes[7]);
+            Assert.AreEqual("20050", prefixes[8]);
+            Assert.AreEqual("200510", prefixes[9]);
+            Assert.AreEqual("200511", prefixes[10]);
+            Assert.AreEqual("2005120", prefixes[11]);
+            Assert.AreEqual("2005121", prefixes[12]);
+            Assert.AreEqual("20051220", prefixes[13]);
+            Assert.AreEqual("20051221", prefixes[14]);
+            Assert.AreEqual("20051222", prefixes[15]);
+            Assert.AreEqual("20051223", prefixes[16]);
+            Assert.AreEqual("20051224", prefixes[17]);
+            Assert.AreEqual("20051225", prefixes[18]);
         }
 
     }
